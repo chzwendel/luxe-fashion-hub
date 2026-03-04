@@ -5,9 +5,9 @@ import { useCartStore } from "@/store/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
-  { label: "MENSWEAR", href: "/" },
-  { label: "WOMENSWEAR", href: "/" },
-  { label: "ACCESSORIES", href: "/" },
+  { label: "MASCULINO", href: "/" },
+  { label: "FEMININO", href: "/" },
+  { label: "ACESSÓRIOS", href: "/" },
 ];
 
 export default function Header() {
@@ -19,20 +19,14 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-6 flex items-center justify-between h-16">
-        {/* Mobile menu toggle */}
-        <button
-          className="lg:hidden text-foreground"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
+        <button className="lg:hidden text-foreground" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Logo */}
         <Link to="/" className="font-display font-black text-xl tracking-[0.3em] text-foreground">
           NOIR
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-10">
           {categories.map((c) => (
             <Link
@@ -45,12 +39,8 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Actions */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setSearchOpen(!searchOpen)}
-            className="text-foreground hover:text-muted-foreground transition-colors"
-          >
+          <button onClick={() => setSearchOpen(!searchOpen)} className="text-foreground hover:text-muted-foreground transition-colors">
             <Search size={20} />
           </button>
           <Link to="/cart" className="relative text-foreground hover:text-muted-foreground transition-colors">
@@ -64,44 +54,22 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Search bar */}
       <AnimatePresence>
         {searchOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="border-t border-border overflow-hidden"
-          >
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="border-t border-border overflow-hidden">
             <div className="container mx-auto px-6 py-4">
-              <input
-                autoFocus
-                type="text"
-                placeholder="Search products..."
-                className="w-full bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              />
+              <input autoFocus type="text" placeholder="Buscar produtos..." className="w-full bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none" />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="lg:hidden border-t border-border overflow-hidden"
-          >
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden border-t border-border overflow-hidden">
             <nav className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {categories.map((c) => (
-                <Link
-                  key={c.label}
-                  to={c.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="font-display text-sm font-bold tracking-[0.2em] text-foreground"
-                >
+                <Link key={c.label} to={c.href} onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
                   {c.label}
                 </Link>
               ))}
