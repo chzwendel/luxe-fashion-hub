@@ -40,13 +40,13 @@ export default function Header() {
 
         <nav className="hidden lg:flex items-center gap-10">
           {categories.map((c) => (
-            <Link
+            <button
               key={c.label}
-              to={c.href}
-              className="font-display text-xs font-bold tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
+              onClick={() => handleCategoryClick(c.value)}
+              className={`font-display text-xs font-bold tracking-[0.2em] transition-colors duration-300 ${selectedCategory === c.value ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               {c.label}
-            </Link>
+            </button>
           ))}
         </nav>
 
