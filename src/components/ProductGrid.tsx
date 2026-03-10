@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { products } from "@/data/products";
 import ProductCard from "@/components/ProductCard";
+import { useFilterStore } from "@/store/filterStore";
 
 const allSizes = ["P", "M", "G", "GG"];
 const allColors = ["black", "white", "beige", "gray"];
@@ -11,7 +12,7 @@ const allCategories = ["menswear", "womenswear", "accessories"] as const;
 export default function ProductGrid() {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const { selectedCategory, setSelectedCategory } = useFilterStore();
 
   const toggleFilter = (value: string, selected: string[], setter: (v: string[]) => void) => {
     setter(selected.includes(value) ? selected.filter((s) => s !== value) : [...selected, value]);

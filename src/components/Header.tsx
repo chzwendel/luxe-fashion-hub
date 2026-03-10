@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { useFilterStore } from "@/store/filterStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
-  { label: "MASCULINO", href: "/" },
-  { label: "FEMININO", href: "/" },
-  { label: "ACESSÓRIOS", href: "/" },
+  { label: "MASCULINO", value: "menswear" },
+  { label: "FEMININO", value: "womenswear" },
+  { label: "ACESSÓRIOS", value: "accessories" },
 ];
 
 export default function Header() {
