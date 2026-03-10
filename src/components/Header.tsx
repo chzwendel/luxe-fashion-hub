@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { useFilterStore } from "@/store/filterStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
-  { label: "MASCULINO", href: "/" },
-  { label: "FEMININO", href: "/" },
-  { label: "ACESSÓRIOS", href: "/" },
+  { label: "MASCULINO", value: "menswear" },
+  { label: "FEMININO", value: "womenswear" },
+  { label: "ACESSÓRIOS", value: "accessories" },
 ];
 
 export default function Header() {
@@ -15,6 +16,16 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const items = useCartStore((s) => s.items);
   const count = items.reduce((s, i) => s + i.quantity, 0);
+  const navigate = useNavigate();
+  const { selectedCategory, setSelectedCategory } = useFilterStore();
+
+  const handleCategoryClick = (value: string) => {
+    setSelectedCategory(selectedCategory === value ? "" : value);
+    navigate("/");
+    setTimeout(() => {
+      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -29,13 +40,13 @@ export default function Header() {
 
         <nav className="hidden lg:flex items-center gap-10">
           {categories.map((c) => (
-            <Link
+            <button
               key={c.label}
-              to={c.href}
-              className="font-display text-xs font-bold tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
+              onClick={() => handleCategoryClick(c.value)}
+              className={`font-display text-xs font-bold tracking-[0.2em] transition-colors duration-300 ${selectedCategory === c.value ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               {c.label}
-            </Link>
+            </button>
           ))}
         </nav>
 
@@ -69,9 +80,9 @@ export default function Header() {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden border-t border-border overflow-hidden">
             <nav className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {categories.map((c) => (
-                <Link key={c.label} to={c.href} onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
+                <button key={c.label} onClick={() => { handleCategoryClick(c.value); setMenuOpen(false); }} className={`font-display text-sm font-bold tracking-[0.2em] text-left ${selectedCategory === c.value ? "text-foreground" : "text-muted-foreground"}`}>
                   {c.label}
-                </Link>
+                </button>
               ))}
             </nav>
           </motion.div>
