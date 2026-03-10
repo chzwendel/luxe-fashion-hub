@@ -16,6 +16,16 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const items = useCartStore((s) => s.items);
   const count = items.reduce((s, i) => s + i.quantity, 0);
+  const navigate = useNavigate();
+  const { selectedCategory, setSelectedCategory } = useFilterStore();
+
+  const handleCategoryClick = (value: string) => {
+    setSelectedCategory(selectedCategory === value ? "" : value);
+    navigate("/");
+    setTimeout(() => {
+      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
