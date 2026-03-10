@@ -6,6 +6,9 @@ import blackSneakers from "@/assets/products/black-sneakers.jpg";
 import navyOvercoat from "@/assets/products/navy-overcoat.jpg";
 import leatherBelt from "@/assets/products/leather-belt.jpg";
 import whiteShirt from "@/assets/products/white-shirt.jpg";
+import blackDress from "@/assets/products/black-dress.jpg";
+import whiteBlouse from "@/assets/products/white-blouse.jpg";
+import beigeTrousers from "@/assets/products/beige-trousers.jpg";
 
 export type Product = {
   id: string;
@@ -28,4 +31,7 @@ export const products: Product[] = [
   { id: "6", name: "Sobretudo Lã Marinho", price: 599.90, image: navyOvercoat, category: "menswear", sizes: ["M", "G"], colors: ["black"], stock: 2, discontinued: false },
   { id: "7", name: "Cinto Couro Premium", price: 149.90, image: leatherBelt, category: "accessories", sizes: ["M", "G"], colors: ["black"], stock: 15, discontinued: false },
   { id: "8", name: "Camisa Linho Camp Collar", price: 179.90, image: whiteShirt, category: "menswear", sizes: ["P", "M", "G", "GG"], colors: ["white"], stock: 7, discontinued: false },
+  { id: "9", name: "Vestido Noir Elegance", price: 329.90, image: blackDress, category: "womenswear", sizes: ["P", "M", "G"], colors: ["black"], stock: 6, discontinued: false },
+  { id: "10", name: "Blusa Seda Branca", price: 189.90, image: whiteBlouse, category: "womenswear", sizes: ["P", "M", "G", "GG"], colors: ["white"], stock: 10, discontinued: false },
+  { id: "11", name: "Calça Pantalona Bege", price: 219.90, image: beigeTrousers, category: "womenswear", sizes: ["P", "M", "G"], colors: ["beige"], stock: 4, discontinued: false },
 ];
