@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { products } from "@/data/products";
 import ProductCard from "@/components/ProductCard";
 
-const allSizes = ["S", "M", "L", "XL"];
+const allSizes = ["P", "M", "G", "GG"];
 const allColors = ["black", "white", "beige", "gray"];
 const colorLabels: Record<string, string> = { black: "Preto", white: "Branco", beige: "Bege", gray: "Cinza" };
 const categoryLabels: Record<string, string> = { menswear: "Masculino", womenswear: "Feminino", accessories: "Acessórios" };
