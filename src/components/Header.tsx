@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
   { label: "MASCULINO", value: "menswear" },
-  { label: "FEMININO", value: "womenswear" },
   { label: "ACESSÓRIOS", value: "accessories" },
 ];
 
