@@ -6,8 +6,8 @@ import { useFilterStore } from "@/store/filterStore";
 const allSizes = ["P", "M", "G", "GG"];
 const allColors = ["black", "white", "beige", "gray"];
 const colorLabels: Record<string, string> = { black: "Preto", white: "Branco", beige: "Bege", gray: "Cinza" };
-const categoryLabels: Record<string, string> = { menswear: "Masculino", womenswear: "Feminino", accessories: "Acessórios" };
-const allCategories = ["menswear", "womenswear", "accessories"] as const;
+const categoryLabels: Record<string, string> = { menswear: "Masculino", accessories: "Acessórios" };
+const allCategories = ["menswear", "accessories"] as const;
 
 export default function ProductGrid() {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);

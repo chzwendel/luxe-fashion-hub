@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
   { label: "MASCULINO", value: "menswear" },
-  { label: "FEMININO", value: "womenswear" },
   { label: "ACESSÓRIOS", value: "accessories" },
 ];
 
@@ -35,7 +34,7 @@ export default function Header() {
         </button>
 
         <Link to="/" className="font-display font-black text-xl tracking-[0.3em] text-foreground">
-          NOIR
+          URBAN STYLES
         </Link>
 
         <nav className="hidden lg:flex items-center gap-10">
@@ -80,9 +79,9 @@ export default function Header() {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden border-t border-border overflow-hidden">
             <nav className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {categories.map((c) => (
-                <Link key={c.label} to={c.href} onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
+                <button key={c.label} onClick={() => { handleCategoryClick(c.value); setMenuOpen(false); }} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
                   {c.label}
-                </Link>
+                </button>
               ))}
             </nav>
           </motion.div>
