@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "sonner";
+import StarRating from "@/components/StarRating";
 
 type Props = { product: Product; index: number };
 
@@ -20,7 +21,7 @@ export default function ProductCard({ product, index }: Props) {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.5 }} className="group">
+    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.05, duration: 0.5 }} className="group">
       <div className="relative bg-card aspect-square overflow-hidden mb-4">
         <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
         {isSoldOut && (
@@ -42,7 +43,11 @@ export default function ProductCard({ product, index }: Props) {
         )}
       </div>
       <h3 className="font-display font-bold text-sm tracking-wide text-foreground">{product.name}</h3>
-      <p className="font-body text-sm text-muted-foreground mt-1">R$ {product.price.toFixed(2).replace(".", ",")}</p>
+      <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-2">{product.description}</p>
+      <div className="mt-1.5">
+        <StarRating rating={product.rating} />
+      </div>
+      <p className="font-body text-sm text-foreground mt-1 font-medium">R$ {product.price.toFixed(2).replace(".", ",")}</p>
     </motion.div>
   );
 }

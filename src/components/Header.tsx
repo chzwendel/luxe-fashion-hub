@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, User } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useFilterStore } from "@/store/filterStore";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,10 +16,18 @@ export default function Header() {
   const items = useCartStore((s) => s.items);
   const count = items.reduce((s, i) => s + i.quantity, 0);
   const navigate = useNavigate();
-  const { selectedCategory, setSelectedCategory } = useFilterStore();
+  const { selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useFilterStore();
 
   const handleCategoryClick = (value: string) => {
     setSelectedCategory(selectedCategory === value ? "" : value);
+    navigate("/");
+    setTimeout(() => {
+      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
     navigate("/");
     setTimeout(() => {
       document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
@@ -50,9 +58,12 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <button onClick={() => setSearchOpen(!searchOpen)} className="text-foreground hover:text-muted-foreground transition-colors">
+          <button onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) setSearchQuery(""); }} className="text-foreground hover:text-muted-foreground transition-colors">
             <Search size={20} />
           </button>
+          <Link to="/login" className="text-foreground hover:text-muted-foreground transition-colors">
+            <User size={20} />
+          </Link>
           <Link to="/cart" className="relative text-foreground hover:text-muted-foreground transition-colors">
             <ShoppingBag size={20} />
             {count > 0 && (
@@ -68,7 +79,14 @@ export default function Header() {
         {searchOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="border-t border-border overflow-hidden">
             <div className="container mx-auto px-6 py-4">
-              <input autoFocus type="text" placeholder="Buscar produtos..." className="w-full bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none" />
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Buscar produtos... (ex: tênis, branca, cinto)"
+                className="w-full bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none"
+              />
             </div>
           </motion.div>
         )}
@@ -83,6 +101,9 @@ export default function Header() {
                   {c.label}
                 </button>
               ))}
+              <Link to="/login" onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
+                MINHA CONTA
+              </Link>
             </nav>
           </motion.div>
         )}

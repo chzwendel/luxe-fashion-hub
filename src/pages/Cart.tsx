@@ -1,20 +1,56 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowLeft, Tag, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
+import { coupons } from "@/data/coupons";
+import { toast } from "sonner";
 
 type CheckoutStep = "cart" | "identification" | "payment";
+
+const SHIPPING_FREE_THRESHOLD = 200;
+const SHIPPING_COST = 19.90;
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, clearCart } = useCartStore();
   const [step, setStep] = useState<CheckoutStep>("cart");
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "credit" | "boleto">("credit");
   const [installments, setInstallments] = useState(1);
-  const cartTotal = total();
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<typeof coupons[0] | null>(null);
+  const [cep, setCep] = useState("");
+  const [shippingCalculated, setShippingCalculated] = useState(false);
+
+  const subtotal = total();
+  const shipping = subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : (shippingCalculated ? SHIPPING_COST : 0);
+  const discount = appliedCoupon ? subtotal * (appliedCoupon.discount / 100) : 0;
+  const cartTotal = subtotal - discount + shipping;
+
+  const handleApplyCoupon = () => {
+    const found = coupons.find((c) => c.code.toLowerCase() === couponCode.trim().toLowerCase());
+    if (!found) {
+      toast.error("Cupom inválido");
+      return;
+    }
+    if (subtotal < found.minValue) {
+      toast.error(`Valor mínimo de R$ ${found.minValue.toFixed(2).replace(".", ",")} para este cupom`);
+      return;
+    }
+    setAppliedCoupon(found);
+    toast.success(`Cupom "${found.code}" aplicado! ${found.description}`);
+  };
+
+  const handleCalculateShipping = () => {
+    if (cep.replace(/\D/g, "").length < 8) {
+      toast.error("CEP inválido");
+      return;
+    }
+    setShippingCalculated(true);
+    toast.success(subtotal >= SHIPPING_FREE_THRESHOLD ? "Frete grátis!" : `Frete: R$ ${SHIPPING_COST.toFixed(2).replace(".", ",")}`);
+  };
 
   const stepLabels: Record<CheckoutStep, string> = { cart: "Carrinho", identification: "Identificação", payment: "Pagamento" };
   const steps: CheckoutStep[] = ["cart", "identification", "payment"];
@@ -65,9 +101,78 @@ export default function CartPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="mt-8 border-t border-border pt-6 flex items-center justify-between">
-                      <span className="font-display font-bold text-lg text-foreground">R$ {cartTotal.toFixed(2).replace(".", ",")}</span>
-                      <Button onClick={() => setStep("identification")}>Continuar</Button>
+
+                    {/* Coupon */}
+                    <div className="mt-8 border border-border p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Tag size={16} className="text-muted-foreground" />
+                        <span className="font-display text-xs font-bold tracking-[0.1em] text-muted-foreground uppercase">Cupom de Desconto</span>
+                      </div>
+                      {appliedCoupon ? (
+                        <div className="flex items-center justify-between">
+                          <span className="font-body text-sm text-foreground">{appliedCoupon.code} — {appliedCoupon.description}</span>
+                          <button onClick={() => { setAppliedCoupon(null); setCouponCode(""); }} className="font-body text-xs text-muted-foreground hover:text-foreground transition-colors">Remover</button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value)}
+                            placeholder="Digite o cupom"
+                            className="flex-1 h-10 px-4 bg-background border border-border font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground outline-none transition-colors"
+                          />
+                          <Button variant="outline" size="sm" onClick={handleApplyCoupon} className="h-10">Aplicar</Button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Shipping */}
+                    <div className="mt-4 border border-border p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Truck size={16} className="text-muted-foreground" />
+                        <span className="font-display text-xs font-bold tracking-[0.1em] text-muted-foreground uppercase">Calcular Frete</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          value={cep}
+                          onChange={(e) => { setCep(e.target.value); setShippingCalculated(false); }}
+                          placeholder="00000-000"
+                          maxLength={9}
+                          className="flex-1 h-10 px-4 bg-background border border-border font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground outline-none transition-colors"
+                        />
+                        <Button variant="outline" size="sm" onClick={handleCalculateShipping} className="h-10">Calcular</Button>
+                      </div>
+                      {shippingCalculated && (
+                        <p className="font-body text-xs text-muted-foreground mt-2">
+                          {subtotal >= SHIPPING_FREE_THRESHOLD
+                            ? "🎉 Frete grátis para este pedido!"
+                            : `Frete: R$ ${SHIPPING_COST.toFixed(2).replace(".", ",")} — Frete grátis acima de R$ ${SHIPPING_FREE_THRESHOLD.toFixed(2).replace(".", ",")}`}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Summary */}
+                    <div className="mt-8 border-t border-border pt-6 space-y-2">
+                      <div className="flex justify-between font-body text-sm text-muted-foreground">
+                        <span>Subtotal</span>
+                        <span>R$ {subtotal.toFixed(2).replace(".", ",")}</span>
+                      </div>
+                      {discount > 0 && (
+                        <div className="flex justify-between font-body text-sm text-green-600">
+                          <span>Desconto ({appliedCoupon?.code})</span>
+                          <span>- R$ {discount.toFixed(2).replace(".", ",")}</span>
+                        </div>
+                      )}
+                      {shippingCalculated && (
+                        <div className="flex justify-between font-body text-sm text-muted-foreground">
+                          <span>Frete</span>
+                          <span>{shipping === 0 ? "Grátis" : `R$ ${shipping.toFixed(2).replace(".", ",")}`}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between pt-4">
+                        <span className="font-display font-bold text-lg text-foreground">R$ {cartTotal.toFixed(2).replace(".", ",")}</span>
+                        <Button onClick={() => setStep("identification")}>Continuar</Button>
+                      </div>
                     </div>
                   </>
                 )}
@@ -157,12 +262,28 @@ export default function CartPage() {
                   </div>
                 )}
 
-                <div className="border-t border-border pt-6">
-                  <div className="flex justify-between mb-6">
+                <div className="border-t border-border pt-6 space-y-2">
+                  <div className="flex justify-between font-body text-sm text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>R$ {subtotal.toFixed(2).replace(".", ",")}</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between font-body text-sm text-green-600">
+                      <span>Desconto</span>
+                      <span>- R$ {discount.toFixed(2).replace(".", ",")}</span>
+                    </div>
+                  )}
+                  {shippingCalculated && (
+                    <div className="flex justify-between font-body text-sm text-muted-foreground">
+                      <span>Frete</span>
+                      <span>{shipping === 0 ? "Grátis" : `R$ ${shipping.toFixed(2).replace(".", ",")}`}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between pt-2">
                     <span className="font-display font-bold text-foreground">Total</span>
                     <span className="font-display font-bold text-lg text-foreground">R$ {cartTotal.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <Button className="w-full" size="lg" onClick={() => { clearCart(); setStep("cart"); }}>Finalizar Compra</Button>
+                  <Button className="w-full mt-4" size="lg" onClick={() => { clearCart(); setStep("cart"); toast.success("Compra finalizada com sucesso!"); }}>Finalizar Compra</Button>
                 </div>
               </motion.div>
             )}

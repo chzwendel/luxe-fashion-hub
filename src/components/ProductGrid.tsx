@@ -12,19 +12,28 @@ const allCategories = ["menswear", "accessories"] as const;
 export default function ProductGrid() {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const { selectedCategory, setSelectedCategory } = useFilterStore();
+  const { selectedCategory, setSelectedCategory, searchQuery } = useFilterStore();
 
   const toggleFilter = (value: string, selected: string[], setter: (v: string[]) => void) => {
     setter(selected.includes(value) ? selected.filter((s) => s !== value) : [...selected, value]);
   };
 
   const filtered = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
     return products
       .filter((p) => !p.discontinued)
       .filter((p) => selectedSizes.length === 0 || p.sizes.some((s) => selectedSizes.includes(s)))
       .filter((p) => selectedColors.length === 0 || p.colors.some((c) => selectedColors.includes(c)))
-      .filter((p) => !selectedCategory || p.category === selectedCategory);
-  }, [selectedSizes, selectedColors, selectedCategory]);
+      .filter((p) => !selectedCategory || p.category === selectedCategory)
+      .filter((p) => {
+        if (!query) return true;
+        return (
+          p.name.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query) ||
+          colorLabels[p.colors[0]]?.toLowerCase().includes(query)
+        );
+      });
+  }, [selectedSizes, selectedColors, selectedCategory, searchQuery]);
 
   return (
     <section id="products" className="py-20 px-6">
