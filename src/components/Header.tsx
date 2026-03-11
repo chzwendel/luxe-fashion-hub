@@ -34,7 +34,7 @@ export default function Header() {
         </button>
 
         <Link to="/" className="font-display font-black text-xl tracking-[0.3em] text-foreground">
-          NOIR
+          URBAN STYLES
         </Link>
 
         <nav className="hidden lg:flex items-center gap-10">

@@ -12,7 +12,7 @@ export type Product = {
   name: string;
   price: number;
   image: string;
-  category: "menswear" | "womenswear" | "accessories";
+  category: "menswear" | "accessories";
   sizes: string[];
   colors: string[];
   stock: number;
