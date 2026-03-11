@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div>
-            <h3 className="font-display font-black text-xl tracking-[0.3em] mb-4">NOIR</h3>
+            <h3 className="font-display font-black text-xl tracking-[0.3em] mb-4">URBAN STYLES</h3>
             <p className="font-body text-sm text-background/60">Moda premium para o indivíduo moderno.</p>
           </div>
           <div>
