@@ -80,9 +80,9 @@ export default function Header() {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden border-t border-border overflow-hidden">
             <nav className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {categories.map((c) => (
-                <button key={c.label} onClick={() => { handleCategoryClick(c.value); setMenuOpen(false); }} className={`font-display text-sm font-bold tracking-[0.2em] text-left ${selectedCategory === c.value ? "text-foreground" : "text-muted-foreground"}`}>
+                <Link key={c.label} to={c.href} onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
                   {c.label}
-                </button>
+                </Link>
               ))}
             </nav>
           </motion.div>
