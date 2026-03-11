@@ -6,9 +6,6 @@ import blackSneakers from "@/assets/products/black-sneakers.jpg";
 import navyOvercoat from "@/assets/products/navy-overcoat.jpg";
 import leatherBelt from "@/assets/products/leather-belt.jpg";
 import whiteShirt from "@/assets/products/white-shirt.jpg";
-import blackDress from "@/assets/products/black-dress.jpg";
-import whiteBlouse from "@/assets/products/white-blouse.jpg";
-import beigeTrousers from "@/assets/products/beige-trousers.jpg";
 
 export type Product = {
   id: string;
