@@ -11,7 +11,7 @@ export default function Footer() {
             <h4 className="font-display text-xs font-bold tracking-[0.2em] mb-4 text-background/40">LOJA</h4>
             <ul className="space-y-2 font-body text-sm text-background/60">
               <li className="hover:text-background transition-colors cursor-pointer">Masculino</li>
-              <li className="hover:text-background transition-colors cursor-pointer">Feminino</li>
+              
               <li className="hover:text-background transition-colors cursor-pointer">Acessórios</li>
             </ul>
           </div>
