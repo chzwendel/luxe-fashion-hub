@@ -24,6 +24,7 @@ export default function LoginPage() {
       return;
     }
     toast.success(isLogin ? "Login realizado com sucesso!" : "Cadastro realizado com sucesso!");
+    navigate("/");
   };
 
   return (
