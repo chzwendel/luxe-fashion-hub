@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="bg-foreground text-background py-16 px-6">
@@ -11,7 +13,6 @@ export default function Footer() {
             <h4 className="font-display text-xs font-bold tracking-[0.2em] mb-4 text-background/40">LOJA</h4>
             <ul className="space-y-2 font-body text-sm text-background/60">
               <li className="hover:text-background transition-colors cursor-pointer">Masculino</li>
-              
               <li className="hover:text-background transition-colors cursor-pointer">Acessórios</li>
             </ul>
           </div>
@@ -31,7 +32,18 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-background/10 mt-12 pt-8 text-center">
+
+        {/* LINK DE TESTE - COR AMARELA PARA TESTAR VISIBILIDADE */}
+        <div className="mt-12 flex justify-center border-t border-white/5 pt-4">
+          <Link
+            to="/admin/login"
+            className="text-[12px] text-yellow-400 hover:text-white transition-colors uppercase font-bold"
+          >
+            Acesso administrativo
+          </Link>
+        </div>
+
+        <div className="mt-4 text-center">
           <p className="font-body text-xs text-background/40">© 2026 URBAN STYLES. Todos os direitos reservados.</p>
         </div>
       </div>
