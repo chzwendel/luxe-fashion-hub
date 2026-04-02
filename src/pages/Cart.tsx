@@ -285,7 +285,19 @@ export default function CartPage() {
                     <span className="font-display font-bold text-foreground">Total</span>
                     <span className="font-display font-bold text-lg text-foreground">R$ {cartTotal.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <Button className="w-full mt-4" size="lg" onClick={() => { clearCart(); setStep("cart"); toast.success("Compra finalizada com sucesso!"); }}>Finalizar Compra</Button>
+                  <Button className="w-full mt-4" size="lg" onClick={() => {
+                    if (!user) { toast.error("Faça login para finalizar a compra"); navigate("/login"); return; }
+                    addPedido({
+                      status_pedido: "confirmado",
+                      valor_total: cartTotal,
+                      frete: shipping,
+                      desconto: discount,
+                      forma_pagamento: paymentMethod,
+                      id_usuarios: user.id,
+                      items: items.map(i => ({ produto_nome: i.product.name, quantidade: i.quantity, valor_unitario: i.product.price, tamanho: i.selectedSize, cor: i.product.colors[0] || "" })),
+                    });
+                    clearCart(); setStep("cart"); toast.success("Compra finalizada com sucesso!");
+                  }}>Finalizar Compra</Button>
                 </div>
               </motion.div>
             )}
