@@ -212,7 +212,7 @@ export default function CartPage() {
                 <div>
                   <h3 className="font-display text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-4">Forma de Pagamento</h3>
                   <div className="grid grid-cols-3 gap-3">
-                    {([{ id: "pix" as const, label: "PIX" }, { id: "credit" as const, label: "Cartão" }, { id: "boleto" as const, label: "Boleto" }]).map((m) => (
+                    {([{ id: "pix" as const, label: "PIX" }, { id: "cartao" as const, label: "Cartão" }, { id: "boleto" as const, label: "Boleto" }]).map((m) => (
                       <button key={m.id} onClick={() => setPaymentMethod(m.id)} className={`h-14 border text-sm font-display font-bold tracking-wider transition-colors duration-200 ${paymentMethod === m.id ? "bg-foreground text-background border-foreground" : "bg-background text-foreground border-border hover:border-foreground"}`}>{m.label}</button>
                     ))}
                   </div>
