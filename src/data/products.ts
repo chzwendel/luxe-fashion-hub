@@ -21,11 +21,15 @@ export type Product = {
   id: string;
   name: string;
   price: number;
+  valor_venda: number;
+  marca: string;
+  codigo_barras: string;
   image: string;
   category: "menswear" | "accessories";
   sizes: string[];
   colors: string[];
   stock: number;
+  id_estoque: string;
   discontinued: boolean;
   description: string;
   rating: number;
