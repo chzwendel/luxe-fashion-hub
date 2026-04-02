@@ -18,6 +18,7 @@ const SHIPPING_COST = 19.90;
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, clearCart } = useCartStore();
   const { user, addPedido } = useAuthStore();
+  const navigate = useNavigate();
   const [step, setStep] = useState<CheckoutStep>("cart");
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao" | "boleto">("cartao");
   const [installments, setInstallments] = useState(1);
