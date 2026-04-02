@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ArrowLeft, Tag, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,8 +17,10 @@ const SHIPPING_COST = 19.90;
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, clearCart } = useCartStore();
+  const { user, addPedido } = useAuthStore();
+  const navigate = useNavigate();
   const [step, setStep] = useState<CheckoutStep>("cart");
-  const [paymentMethod, setPaymentMethod] = useState<"pix" | "credit" | "boleto">("credit");
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao" | "boleto">("cartao");
   const [installments, setInstallments] = useState(1);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<typeof coupons[0] | null>(null);
@@ -209,7 +212,7 @@ export default function CartPage() {
                 <div>
                   <h3 className="font-display text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-4">Forma de Pagamento</h3>
                   <div className="grid grid-cols-3 gap-3">
-                    {([{ id: "pix" as const, label: "PIX" }, { id: "credit" as const, label: "Cartão" }, { id: "boleto" as const, label: "Boleto" }]).map((m) => (
+                    {([{ id: "pix" as const, label: "PIX" }, { id: "cartao" as const, label: "Cartão" }, { id: "boleto" as const, label: "Boleto" }]).map((m) => (
                       <button key={m.id} onClick={() => setPaymentMethod(m.id)} className={`h-14 border text-sm font-display font-bold tracking-wider transition-colors duration-200 ${paymentMethod === m.id ? "bg-foreground text-background border-foreground" : "bg-background text-foreground border-border hover:border-foreground"}`}>{m.label}</button>
                     ))}
                   </div>
@@ -225,7 +228,7 @@ export default function CartPage() {
                   </div>
                 )}
 
-                {paymentMethod === "credit" && (
+                {paymentMethod === "cartao" && (
                   <div className="space-y-4">
                     {[{ label: "Número do Cartão", placeholder: "0000 0000 0000 0000" }, { label: "Nome no Cartão", placeholder: "Nome impresso no cartão" }].map((f) => (
                       <div key={f.label}>
@@ -283,7 +286,19 @@ export default function CartPage() {
                     <span className="font-display font-bold text-foreground">Total</span>
                     <span className="font-display font-bold text-lg text-foreground">R$ {cartTotal.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <Button className="w-full mt-4" size="lg" onClick={() => { clearCart(); setStep("cart"); toast.success("Compra finalizada com sucesso!"); }}>Finalizar Compra</Button>
+                  <Button className="w-full mt-4" size="lg" onClick={() => {
+                    if (!user) { toast.error("Faça login para finalizar a compra"); navigate("/login"); return; }
+                    addPedido({
+                      status_pedido: "confirmado",
+                      valor_total: cartTotal,
+                      frete: shipping,
+                      desconto: discount,
+                      forma_pagamento: paymentMethod,
+                      id_usuarios: user.id,
+                      items: items.map(i => ({ produto_nome: i.product.name, quantidade: i.quantity, valor_unitario: i.product.price, tamanho: i.selectedSize, cor: i.product.colors[0] || "" })),
+                    });
+                    clearCart(); setStep("cart"); toast.success("Compra finalizada com sucesso!");
+                  }}>Finalizar Compra</Button>
                 </div>
               </motion.div>
             )}

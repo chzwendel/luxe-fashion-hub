@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Percent } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,18 +9,20 @@ import StatusBadge from "@/components/admin/StatusBadge";
 import { toast } from "sonner";
 
 const mockProducts = [
-  { id: 1, name: "Camiseta Preta Básica", price: 79.9 },
-  { id: 2, name: "Calça Jogger Navy", price: 149.9 },
-  { id: 3, name: "Tênis Branco Classic", price: 249.9 },
-  { id: 4, name: "Jaqueta Jeans Oversized", price: 199.9 },
-  { id: 5, name: "Moletom Cinza Urban", price: 159.9 },
+  { id: 1, name: "Camiseta Preta Básica", price: 79.9, barcode: "7891234560001", stock: 150 },
+  { id: 2, name: "Calça Jogger Navy", price: 149.9, barcode: "7891234560002", stock: 80 },
+  { id: 3, name: "Tênis Branco Classic", price: 249.9, barcode: "7891234560003", stock: 45 },
+  { id: 4, name: "Jaqueta Jeans Oversized", price: 199.9, barcode: "7891234560004", stock: 30 },
+  { id: 5, name: "Moletom Cinza Urban", price: 159.9, barcode: "7891234560006", stock: 0 },
+  { id: 6, name: "Relógio Prata Minimal", price: 349.9, barcode: "7891234560015", stock: 20 },
 ];
 
-interface SaleItem { productId: number; name: string; price: number; qty: number; }
+interface SaleItem { productId: number; name: string; price: number; qty: number; stock: number; }
 
 export default function Vendas() {
   const [items, setItems] = useState<SaleItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState("");
+  const [barcodeSearch, setBarcodeSearch] = useState("");
   const [qty, setQty] = useState(1);
   const [discount, setDiscount] = useState(0);
   const [coupon, setCoupon] = useState("");
@@ -35,13 +37,35 @@ export default function Vendas() {
   const addItem = () => {
     const p = mockProducts.find(p => p.id === parseInt(selectedProduct));
     if (!p) return;
+    if (p.stock === 0) { toast.error("Produto esgotado — venda não permitida"); return; }
     const existing = items.find(i => i.productId === p.id);
     if (existing) {
+      if (existing.qty + qty > p.stock) { toast.error(`Estoque insuficiente (disponível: ${p.stock})`); return; }
       setItems(items.map(i => i.productId === p.id ? { ...i, qty: i.qty + qty } : i));
     } else {
-      setItems([...items, { productId: p.id, name: p.name, price: p.price, qty }]);
+      if (qty > p.stock) { toast.error(`Estoque insuficiente (disponível: ${p.stock})`); return; }
+      setItems([...items, { productId: p.id, name: p.name, price: p.price, qty, stock: p.stock }]);
     }
     setSelectedProduct(""); setQty(1);
+  };
+
+  const addByBarcode = () => {
+    const p = mockProducts.find(p => p.barcode === barcodeSearch.trim());
+    if (!p) { toast.error("Produto não encontrado com este código de barras"); return; }
+    if (p.stock === 0) { toast.error("Produto esgotado — venda não permitida"); return; }
+    const existing = items.find(i => i.productId === p.id);
+    if (existing) {
+      setItems(items.map(i => i.productId === p.id ? { ...i, qty: i.qty + 1 } : i));
+    } else {
+      setItems([...items, { productId: p.id, name: p.name, price: p.price, qty: 1, stock: p.stock }]);
+    }
+    setBarcodeSearch("");
+    toast.success(`${p.name} adicionado`);
+  };
+
+  const applyDiscount15 = () => {
+    setDiscount(15);
+    toast.success("Desconto de 15% aplicado ao valor total!");
   };
 
   const finalizeSale = () => {
@@ -49,6 +73,8 @@ export default function Vendas() {
     toast.success(`Venda de R$ ${total.toFixed(2)} registrada!`);
     setItems([]); setDiscount(0); setCoupon("");
   };
+
+  const availableProducts = mockProducts.filter(p => p.stock > 0);
 
   return (
     <div className="space-y-6">
@@ -59,10 +85,26 @@ export default function Vendas() {
           <Card className="border-none shadow-md">
             <CardHeader><CardTitle className="text-lg font-display">Itens da Venda</CardTitle></CardHeader>
             <CardContent className="space-y-4">
+              {/* Barcode search */}
+              <div className="flex gap-3">
+                <Input
+                  placeholder="Buscar por código de barras..."
+                  value={barcodeSearch}
+                  onChange={e => setBarcodeSearch(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") addByBarcode(); }}
+                  className="flex-1"
+                />
+                <Button variant="outline" onClick={addByBarcode} disabled={!barcodeSearch.trim()}>Buscar</Button>
+              </div>
+
+              {/* Product select */}
               <div className="flex gap-3">
                 <Select value={selectedProduct} onValueChange={setSelectedProduct}>
                   <SelectTrigger className="flex-1"><SelectValue placeholder="Selecionar produto" /></SelectTrigger>
-                  <SelectContent>{mockProducts.map(p => <SelectItem key={p.id} value={String(p.id)}>{p.name} — R$ {p.price.toFixed(2)}</SelectItem>)}</SelectContent>
+                  <SelectContent>
+                    {availableProducts.map(p => <SelectItem key={p.id} value={String(p.id)}>{p.name} — R$ {p.price.toFixed(2)} (estoque: {p.stock})</SelectItem>)}
+                    {mockProducts.filter(p => p.stock === 0).map(p => <SelectItem key={p.id} value={String(p.id)} disabled>{p.name} — ESGOTADO</SelectItem>)}
+                  </SelectContent>
                 </Select>
                 <Input type="number" min={1} value={qty} onChange={e => setQty(parseInt(e.target.value) || 1)} className="w-20" />
                 <Button onClick={addItem} disabled={!selectedProduct}><Plus className="h-4 w-4" /></Button>
@@ -92,7 +134,12 @@ export default function Vendas() {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-foreground">Desconto (%)</label>
-              <Input type="number" min={0} max={100} value={discount} onChange={e => setDiscount(parseFloat(e.target.value) || 0)} />
+              <div className="flex gap-2">
+                <Input type="number" min={0} max={100} value={discount} onChange={e => setDiscount(parseFloat(e.target.value) || 0)} />
+                <Button variant="outline" size="sm" onClick={applyDiscount15} className="shrink-0 gap-1">
+                  <Percent className="h-3 w-3" /> 15%
+                </Button>
+              </div>
             </div>
             <div>
               <label className="text-sm font-medium text-foreground">Cupom</label>
