@@ -228,7 +228,7 @@ export default function CartPage() {
                   </div>
                 )}
 
-                {paymentMethod === "credit" && (
+                {paymentMethod === "cartao" && (
                   <div className="space-y-4">
                     {[{ label: "Número do Cartão", placeholder: "0000 0000 0000 0000" }, { label: "Nome no Cartão", placeholder: "Nome impresso no cartão" }].map((f) => (
                       <div key={f.label}>
