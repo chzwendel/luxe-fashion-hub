@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import ProductDetail from "./pages/ProductDetail";
+import MyAccount from "./pages/MyAccount";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AppLayout from "./components/admin/AppLayout";
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/produto/:id" element={<ProductDetail />} />
+          <Route path="/minha-conta" element={<MyAccount />} />
 
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />

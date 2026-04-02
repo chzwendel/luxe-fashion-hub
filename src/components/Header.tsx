@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, Menu, X, User } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useFilterStore } from "@/store/filterStore";
+import { useAuthStore } from "@/store/authStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
@@ -17,6 +18,7 @@ export default function Header() {
   const count = items.reduce((s, i) => s + i.quantity, 0);
   const navigate = useNavigate();
   const { selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useFilterStore();
+  const user = useAuthStore(s => s.user);
 
   const handleCategoryClick = (value: string) => {
     setSelectedCategory(selectedCategory === value ? "" : value);
@@ -61,8 +63,9 @@ export default function Header() {
           <button onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) setSearchQuery(""); }} className="text-foreground hover:text-muted-foreground transition-colors">
             <Search size={20} />
           </button>
-          <Link to="/login" className="text-foreground hover:text-muted-foreground transition-colors">
+          <Link to={user ? "/minha-conta" : "/login"} className="flex items-center gap-2 text-foreground hover:text-muted-foreground transition-colors">
             <User size={20} />
+            {user && <span className="hidden lg:inline font-body text-xs text-muted-foreground">{user.nome.split(" ")[0]}</span>}
           </Link>
           <Link to="/cart" className="relative text-foreground hover:text-muted-foreground transition-colors">
             <ShoppingBag size={20} />
@@ -97,12 +100,12 @@ export default function Header() {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden border-t border-border overflow-hidden">
             <nav className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {categories.map((c) => (
-                <button key={c.label} onClick={() => { handleCategoryClick(c.value); setMenuOpen(false); }} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
+                <button key={c.label} onClick={() => { handleCategoryClick(c.value); setMenuOpen(false); }} className="font-display text-sm font-bold tracking-[0.2em] text-foreground text-left">
                   {c.label}
                 </button>
               ))}
-              <Link to="/login" onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
-                MINHA CONTA
+              <Link to={user ? "/minha-conta" : "/login"} onClick={() => setMenuOpen(false)} className="font-display text-sm font-bold tracking-[0.2em] text-foreground">
+                {user ? "MINHA CONTA" : "ENTRAR"}
               </Link>
             </nav>
           </motion.div>
