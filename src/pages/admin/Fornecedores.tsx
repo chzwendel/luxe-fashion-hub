@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import StatusBadge, { type StatusType } from "@/components/admin/StatusBadge";
 import { toast } from "sonner";
+import { validateCNPJ, formatCNPJ, formatPhone } from "@/lib/validators";
 
 interface Supplier {
   id: number; name: string; cnpj: string; contact: string; phone: string;
@@ -29,7 +30,10 @@ export default function Fornecedores() {
   const filtered = suppliers.filter(s => s.name.toLowerCase().includes(search.toLowerCase()) || s.cnpj.includes(search));
 
   const handleAdd = () => {
-    if (!form.name || !form.cnpj) { toast.error("Nome e CNPJ obrigatórios"); return; }
+    if (!form.name || !form.cnpj) { toast.error("Razão Social e CNPJ obrigatórios"); return; }
+    if (!validateCNPJ(form.cnpj)) { toast.error("CNPJ inválido"); return; }
+    if (suppliers.find(s => s.cnpj === form.cnpj)) { toast.error("CNPJ já cadastrado"); return; }
+    if (form.email && suppliers.find(s => s.email === form.email)) { toast.error("E-mail já cadastrado"); return; }
     setSuppliers([...suppliers, { ...form, id: suppliers.length + 1, status: "ativo" as StatusType }]);
     setOpen(false); toast.success("Fornecedor cadastrado!");
     setForm({ name: "", cnpj: "", contact: "", phone: "", email: "", deadline: "", paymentTerms: "" });
@@ -45,9 +49,9 @@ export default function Fornecedores() {
             <DialogHeader><DialogTitle>Cadastrar Fornecedor</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <Input placeholder="Razão Social *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-              <Input placeholder="CNPJ *" value={form.cnpj} onChange={e => setForm({ ...form, cnpj: e.target.value })} />
+              <Input placeholder="CNPJ *" value={form.cnpj} onChange={e => setForm({ ...form, cnpj: formatCNPJ(e.target.value) })} maxLength={18} />
               <Input placeholder="Contato" value={form.contact} onChange={e => setForm({ ...form, contact: e.target.value })} />
-              <Input placeholder="Telefone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+              <Input placeholder="Telefone" value={form.phone} onChange={e => setForm({ ...form, phone: formatPhone(e.target.value) })} maxLength={15} />
               <Input placeholder="E-mail" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
               <Input placeholder="Prazo de entrega" value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} />
               <Input placeholder="Condições de pagamento" value={form.paymentTerms} onChange={e => setForm({ ...form, paymentTerms: e.target.value })} />
